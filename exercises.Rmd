@@ -1,6 +1,8 @@
 ---
 title: "ggplot2 examples and exercises"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -64,11 +66,13 @@ National Park.
 
 ```{r}
 data("faithful")
-# Basic scatterplot
+# Basic scatterplot - with global mapping
 ggplot(data = faithful, 
        mapping = aes(x = eruptions, y = waiting)) + 
   geom_point()
 # Data and mapping can be given both as global (in ggplot()) or per layer
+
+# With layer specific mapping (no global data at all)
 ggplot() + 
   geom_point(mapping = aes(x = eruptions, y = waiting),
              data = faithful)
@@ -77,6 +81,10 @@ ggplot() +
 If an aesthetic is linked to data it is put into `aes()`
 
 ```{r}
+# Don't usually need the mapping
+# Usually you have global data and some layer specific mapping
+# Inside mapping - can also map other aesthetics, such as color
+# Automatically get legend - takes names from mapping
 ggplot(faithful) + 
   geom_point(aes(x = eruptions, y = waiting, colour = eruptions < 3))
 ```
@@ -84,6 +92,8 @@ ggplot(faithful) +
 If you simple want to set it to a value, put it outside of `aes()`
 
 ```{r}
+# Instead of mapping color - you can set it (i.e. to a fixed value)
+# If this is the case - should be outside of the aesthetic - not a mapping
 ggplot(faithful) + 
   geom_point(aes(x = eruptions, y = waiting),
              colour = 'steelblue')
@@ -92,6 +102,7 @@ ggplot(faithful) +
 Some geoms only need a single mapping and will calculate the rest for you
 
 ```{r}
+# Hist - only need x value, ggplot calculates the y for you
 ggplot(faithful) + 
   geom_histogram(aes(x = eruptions))
 ```
@@ -100,8 +111,10 @@ geoms are drawn in the order they are added. The point layer is thus drawn on
 top of the density contours in the example below.
 
 ```{r}
+# Order or arguments within the plus sign matters. Layers are stacked in order of code appearance
+# Points on top of density plot
 ggplot(faithful, aes(x = eruptions, y = waiting)) + 
-  geom_density_2d() + 
+  geom_density_2d() + # Shown as contours
   geom_point()
 ```
 
@@ -112,7 +125,10 @@ See `?geom_point` for more information on the point layer.
 
 ```{r}
 ggplot(faithful) + 
-  geom_point(aes(x = eruptions, y = waiting))
+  geom_point(aes(x = eruptions, y = waiting), 
+             shape = 'square',
+             alpha = 0.3,
+             size = 3)
 ```
 
 Hint 1: transparency is controlled with `alpha`, and shape with `shape`
@@ -124,7 +140,7 @@ Colour the two distributions in the histogram with different colours
 
 ```{r}
 ggplot(faithful) + 
-  geom_histogram(aes(x = eruptions))
+  geom_histogram(aes(x = eruptions, fill = eruptions < 3.2))
 ```
 
 Hint 1: For polygons you can map two different colour-like aesthetics: `colour` 
@@ -135,9 +151,14 @@ Hint 1: For polygons you can map two different colour-like aesthetics: `colour`
 Colour the distributions in the histogram by whether `waiting` is above or below 
 `60`. What happens?
 
+Histogram - default position is stack
+When changed to identity - moves behind
+
 ```{r}
 ggplot(faithful) + 
-  geom_histogram(aes(x = eruptions))
+  geom_histogram(aes(x = eruptions, fill = waiting < 60), 
+                 position = 'identity',
+                 alpha = 0.6)
 ```
 
 Change the plot above by setting `position = 'dodge'` in `geom_histogram()` 
@@ -150,7 +171,8 @@ how to draw straight lines from a slope and intercept.
 
 ```{r}
 ggplot(faithful) + 
-  geom_point(aes(x = eruptions, y = waiting))
+  geom_point(aes(x = eruptions, y = waiting)) +
+  geom_abline(slope = -40, intercept = 190)
 ```
 
 ### Stat
