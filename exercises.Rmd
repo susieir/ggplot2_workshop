@@ -212,6 +212,8 @@ Values calculated by the stat is available with the `after_stat()` function
 inside `aes()`. You can do all sorts of computations inside that.
 
 ```{r}
+# Modifies to percentage of the whole
+# Count is being calculated by the stat
 ggplot(mpg) + 
   geom_bar(aes(x = class, y = after_stat(100 * count / sum(count))))
 ```
@@ -239,7 +241,7 @@ stat it uses as default. Then modify the code to use the stat directly instead
 
 ```{r}
 ggplot(mpg) + 
-  geom_bar(aes(x = class))
+  stat_count(aes(x = class))
 ```
 
 * * *
@@ -248,7 +250,8 @@ Use `stat_summary()` to add a red dot at the mean `hwy` for each group
 
 ```{r}
 ggplot(mpg) + 
-  geom_jitter(aes(x = class, y = hwy), width = 0.2)
+  geom_jitter(aes(x = class, y = hwy), width = 0.2) +
+  stat_summary(aes(x = class, y = hwy), fun = median, geom= 'point', color = 'red', size = 5)
 ```
 
 Hint: You will need to change the default geom of `stat_summary()`
