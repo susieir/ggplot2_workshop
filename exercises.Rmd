@@ -271,7 +271,7 @@ conventions.
 ```{r}
 ggplot(mpg) + 
   geom_point(aes(x = displ, y = hwy, colour = class)) + 
-  scale_colour_brewer(type = 'qual')
+  scale_colour_brewer(name = 'CLASS', type = 'qual')
 ```
 
 Positional mappings (x and y) also have associated scales.
@@ -290,7 +290,9 @@ Color Brewer and pick your favourite. Modify the code below to use it
 ```{r}
 ggplot(mpg) + 
   geom_point(aes(x = displ, y = hwy, colour = class)) + 
-  scale_colour_brewer(type = 'qual')
+  scale_colour_brewer(palette = 'Set1')
+
+#RColorBrewer::display.brewer.all()
 ```
 
 * * *
@@ -301,8 +303,9 @@ amount of cylinders (4, 5, 6, and 8) are present in the legend.
 
 ```{r}
 ggplot(mpg) + 
-  geom_point(aes(x = displ, y = hwy, colour = class)) + 
-  scale_colour_brewer(type = 'qual')
+  geom_point(aes(x = displ, y = hwy, colour = class, size = cyl)) + 
+  scale_colour_brewer(type = 'qual') +
+  scale_size_area(breaks = c(4, 5, 6, 8), max_size = 10)
 ```
 
 Hint: The `breaks` argument in the scale is used to control which values are
@@ -318,7 +321,7 @@ variable, but to the continuous `cty` variable. What happens to the guide?
 
 ```{r}
 ggplot(mpg) + 
-  geom_point(aes(x = displ, y = hwy, colour = class, size = cty))
+  geom_point(aes(x = displ, y = hwy, colour = cty, size = cty))
 ```
 
 * * *
@@ -331,7 +334,8 @@ guide type?
 
 ```{r}
 ggplot(mpg) + 
-  geom_point(aes(x = displ, y = hwy, colour = cty, size = cty))
+  geom_point(aes(x = displ, y = hwy, colour = cty, size = cty)) +
+  guides(color = 'legend')
 ```
 
 ### Facets
@@ -360,7 +364,7 @@ settings in the plot below:
 ```{r}
 ggplot(mpg) + 
   geom_point(aes(x = displ, y = hwy)) + 
-  facet_wrap(~ drv)
+  facet_wrap(~ drv, scales = 'free_y')
 ```
 
 * * *
@@ -372,7 +376,7 @@ between the panels in the plot. What happens?
 ```{r}
 ggplot(mpg) + 
   geom_bar(aes(y = manufacturer)) + 
-  facet_grid(class ~ .)
+  facet_grid(class ~ ., scales = 'free_y', space = 'free_y')
 ```
 
 Use the `space` argument in `facet_grid()` to change the plot above so each bar 
@@ -386,7 +390,7 @@ recreate the same panels present in the plot below by using `facet_wrap()`
 ```{r}
 ggplot(mpg) + 
   geom_point(aes(x = displ, y = hwy)) + 
-  facet_grid(year ~ drv)
+  facet_wrap(~ drv + year)
 ```
 
 ### Coordinates
@@ -394,6 +398,7 @@ The coordinate system is the fabric you draw your layers on in the end. The
 default `coord_cartesion provides the standard rectangular x-y coordinate 
 system. Changing the coordinate system can have dramatic effects
 ```{r}
+library(ggplot2)
 ggplot(mpg) + 
   geom_bar(aes(x = class)) + 
   coord_polar()
@@ -431,7 +436,8 @@ and then using `coord_trans()`. Compare the results — how do they differ?
 
 ```{r}
 ggplot(mpg) + 
-  geom_point(aes(x = hwy, y = displ))
+  geom_point(aes(x = hwy, y = displ)) +
+  coord_trans(y = 'log')
 ```
 
 * * *
@@ -451,7 +457,7 @@ world <- sf::st_wrap_dateline(world,
 # Plot code
 ggplot(world) + 
   geom_sf() + 
-  coord_sf(crs = "+proj=moll")
+  coord_sf(crs = "+proj=robin")
 ```
 
 Maps are a huge area in data visualisation and simply too big to cover in this 
