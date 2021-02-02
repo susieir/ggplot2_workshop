@@ -570,7 +570,9 @@ the middle plot takes up half of the total space:
 ```{r}
 p <- ggplot(mtcars) + 
   geom_point(aes(x = disp, y = mpg))
-p + p + p
+# Won't penalise wide plots - it will just make the plot area bigger
+# Widths can also be a unit vector widths = unit(c(5, 1, 1), c("cm", "null", "null"))
+p + p + p + plot_layout(widths = c(1, 2, 1))
 ```
 
 * * *
@@ -583,7 +585,7 @@ p1 <- ggplot(mtcars[mtcars$gear == 3,]) +
   geom_point(aes(x = disp, y = mpg))
 p2 <- ggplot(mtcars[mtcars$gear == 4,]) + 
   geom_point(aes(x = disp, y = mpg))
-p1 + p2
+p1 + p2 & scale_y_continuous(limits = c(10, 40))
 ```
 
 * * *
@@ -643,7 +645,8 @@ cylinders.
 
 ```{r}
 ggplot(mpg) + 
-  geom_point(aes(x = displ, y = hwy)) + 
+  geom_point(aes(x = displ, y = hwy, group = seq_len(nrow(mpg)))) # Each row a distinct observation - stops points moving between points
++ 
   ggtitle("Cars with {closest_state} cylinders") + 
   transition_states(factor(cyl))
 ```
@@ -682,7 +685,8 @@ mpg2 <- tidyr::pivot_longer(mpg, c(cty,hwy))
 ggplot(mpg2) + 
   geom_point(aes(x = displ, y = value)) + 
   ggtitle("{if (closest_state == 'cty') 'Efficiency in city' else 'Efficiency on highway'}") + 
-  transition_states(name)
+  transition_states(name) +
+  ease_aes(y = "cubic-in-out")
 ```
 
 ### Annotation
