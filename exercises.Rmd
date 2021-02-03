@@ -733,6 +733,7 @@ plot below where you only label 10 random points.
 mtcars2 <- mtcars
 mtcars2$label <- rownames(mtcars2)
 points_to_label <- sample(nrow(mtcars), 10)
+mtcars2$label[-points_to_label] <- ""
 ggplot(mtcars2, aes(x = disp, y = mpg)) + 
   geom_point() + 
   geom_text_repel(aes(label = label))
@@ -748,7 +749,7 @@ mtcars2$label <- ""
 mtcars2$label[1:10] <- rownames(mtcars2)[1:10]
 ggplot(mtcars2, aes(x = disp, y = mpg)) + 
   geom_point() + 
-  geom_text_repel(aes(label = label))
+  geom_text_repel(aes(label = label), direction = "y")
 ```
 
 * * *
@@ -759,8 +760,7 @@ below:
 ```{r}
 ggplot(mtcars, aes(x = disp, y = mpg)) +
   geom_point() + 
-  geom_mark_ellipse(aes(filter = gear == 4,
-                        label = '4 gear cars'))
+  geom_mark_hull(aes(group = factor(gear), label = gear), fill = NA, colour = NA)
 ```
 
 ### Networks
@@ -798,7 +798,7 @@ graph below. See the [the website](https://ggraph.data-imaginist.com/reference/i
 for an overview of the different layouts.
 
 ```{r}
-ggraph(graph) + 
+ggraph(graph, layout = 'gem') + 
   geom_edge_link() + 
   geom_node_point(aes(colour = clique), size = 3)
 ```
@@ -811,8 +811,9 @@ in the graph below to show the presence of multiple edges
 ```{r}
 highschool_gr <- as_tbl_graph(highschool)
 ggraph(highschool_gr) + 
-  geom_edge_link() + 
-  geom_node_point()
+  geom_edge_fan() + 
+  geom_node_point() +
+  facet_edges(~year)
 ```
 
 Faceting works in ggraph as it does in ggplot2, but you must choose to facet by
